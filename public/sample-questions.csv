@@ -1,0 +1,4 @@
+question,option1,option2,option3,option4,correct_option,explanation,difficulty,topic,sub_topic,media_url
+"What is 2 + 2?",3,4,5,6,2,"Basic addition.",easy,Dice,Games,
+"Capital of France?",Berlin,Madrid,Paris,Rome,C,,medium,,,
+"Which gas do plants absorb?","Oxygen","Carbon dioxide","Nitrogen","Hydrogen",option2,"Plants take in CO2 for photosynthesis.",easy,,,
