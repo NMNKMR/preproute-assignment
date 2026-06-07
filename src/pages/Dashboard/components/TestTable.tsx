@@ -35,6 +35,12 @@ export function TestTable({ tests, onView, onEdit, onDelete }: TestTableProps) {
               </td>
               <td className="px-4 py-3">
                 <StatusBadge status={t.status as TestStatus} />
+                <div className="mt-1.5 space-y-0.5 text-xs text-muted">
+                  <div>{t.total_marks} marks</div>
+                  <div>
+                    {(t.questions?.length ?? 0)}/{t.total_questions} questions
+                  </div>
+                </div>
               </td>
               <td className="px-4 py-3 text-muted">{formatDate(t.created_at)}</td>
               <td className="px-4 py-3">
