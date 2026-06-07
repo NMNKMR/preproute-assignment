@@ -58,7 +58,7 @@ describe('AddQuestions', () => {
     renderPage()
     await screen.findByText('Algebra Basics')
 
-    await user.click(screen.getByRole('button', { name: /save & publish/i }))
+    await user.click(screen.getByRole('button', { name: /save & preview/i }))
     // Still on the questions page (no navigation to preview).
     expect(screen.queryByText('PREVIEW PAGE')).not.toBeInTheDocument()
   })
@@ -75,7 +75,7 @@ describe('AddQuestions', () => {
     await user.type(screen.getByLabelText('Option 4'), '6')
     await user.click(screen.getByLabelText('Mark option 2 correct'))
 
-    await user.click(screen.getByRole('button', { name: /save & publish/i }))
+    await user.click(screen.getByRole('button', { name: /save & preview/i }))
 
     expect(await screen.findByText('PREVIEW PAGE')).toBeInTheDocument()
   })
@@ -140,6 +140,25 @@ describe('AddQuestions', () => {
     expect(screen.getByTestId('question-editor')).toHaveValue('')
     expect(screen.getByLabelText('Option 1')).toHaveValue('')
     expect(screen.getByLabelText('Option 2')).toHaveValue('')
+  })
+
+  it('captures a media URL and shows a live preview', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('Algebra Basics')
+
+    expect(
+      screen.queryByRole('img', { name: /question media preview/i }),
+    ).not.toBeInTheDocument()
+
+    await user.type(
+      screen.getByLabelText('Media URL'),
+      'https://example.com/pic.png',
+    )
+
+    expect(
+      screen.getByRole('img', { name: /question media preview/i }),
+    ).toHaveAttribute('src', 'https://example.com/pic.png')
   })
 
   it('imports questions from a CSV file', async () => {

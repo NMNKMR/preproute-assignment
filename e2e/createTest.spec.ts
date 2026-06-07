@@ -49,7 +49,7 @@ test('create a test, add a question, and publish it', async ({ page }) => {
   await page.getByLabel('Option 3', { exact: true }).fill('5')
   await page.getByLabel('Option 4', { exact: true }).fill('6')
   await page.getByLabel('Mark option 2 correct').check()
-  await page.getByRole('button', { name: /save & publish/i }).first().click()
+  await page.getByRole('button', { name: /save & preview/i }).first().click()
 
   // Preview & Publish
   await expect(page).toHaveURL(/\/preview$/)

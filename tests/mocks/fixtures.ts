@@ -34,6 +34,7 @@ export const questions: Record<string, Question> = {
     correct_option: 'option2',
     explanation: 'Basic addition.',
     difficulty: 'easy',
+    media_url: 'https://example.com/q1.png',
     test_id: 'test-2',
   },
   q2: {

@@ -28,6 +28,16 @@ export function QuestionPreview({ question, index }: QuestionPreviewProps) {
           dangerouslySetInnerHTML={{ __html: question.question }}
         />
       </div>
+      {question.media_url && (
+        <img
+          src={question.media_url}
+          alt={`Question ${index + 1} media`}
+          className="mt-3 max-h-60 rounded-lg border border-line object-contain"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none'
+          }}
+        />
+      )}
       <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {OPTION_FIELDS.map((field) => {
           const isCorrect = question.correct_option === field

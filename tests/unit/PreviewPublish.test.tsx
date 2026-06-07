@@ -76,6 +76,12 @@ describe('PreviewPublish', () => {
     expect(paris.closest('li')).toHaveClass('bg-emerald-50')
   })
 
+  it('renders the question media image when present', async () => {
+    renderPage()
+    const img = await screen.findByRole('img', { name: /question 1 media/i })
+    expect(img).toHaveAttribute('src', 'https://example.com/q1.png')
+  })
+
   it('Edit navigates to the questions page', async () => {
     const user = userEvent.setup()
     renderPage()

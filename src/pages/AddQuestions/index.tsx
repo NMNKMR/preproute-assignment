@@ -255,7 +255,8 @@ export function AddQuestions() {
   // Anchor at the top of the editor so advancing scrolls back up (the scroll
   // container is <main>, not the window, so scrollIntoView is the reliable path).
   function scrollToTop() {
-    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // optional-call: scrollIntoView is undefined in jsdom (tests)
+    topRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
   }
 
   // "Next": go to the next draft, or add one (when room) after completing this.
@@ -472,6 +473,43 @@ export function AddQuestions() {
             value={draft.sub_topic}
             onChange={(v) => patch({ sub_topic: v })}
           />
+        </div>
+
+        {/* Media (image) URL */}
+        <div className="mt-5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-ink">
+              Media URL{' '}
+              <span className="font-normal text-muted">(optional image)</span>
+            </p>
+            {draft.media_url && (
+              <ClearButton
+                label="Clear media URL"
+                onClick={() => patch({ media_url: '' })}
+              />
+            )}
+          </div>
+          <input
+            type="url"
+            value={draft.media_url}
+            onChange={(e) => patch({ media_url: e.target.value })}
+            placeholder="https://example.com/image.png"
+            aria-label="Media URL"
+            className="mt-2 h-11 w-full rounded-lg border border-line px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
+          />
+          {draft.media_url && (
+            <img
+              src={draft.media_url}
+              alt="Question media preview"
+              className="mt-3 max-h-48 rounded-lg border border-line object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+              onLoad={(e) => {
+                e.currentTarget.style.display = ''
+              }}
+            />
+          )}
         </div>
 
         {/* Footer actions */}
