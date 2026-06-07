@@ -24,7 +24,7 @@ export function QuestionPreview({ question, index }: QuestionPreviewProps) {
           Q{index + 1}.
         </span>
         <div
-          className="prose-sm min-w-0 flex-1 wrap-break-word text-sm text-ink [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded [&_p]:m-0"
+          className="rich-content prose-sm min-w-0 flex-1 wrap-break-word text-sm text-ink [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded [&_p]:m-0"
           dangerouslySetInnerHTML={{ __html: question.question }}
         />
       </div>

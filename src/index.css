@@ -44,6 +44,37 @@ body {
   }
 }
 
+/*
+ * Render Quill rich-text content outside the editor (e.g. question preview).
+ * Quill stores both list types as <ol> with <li data-list="ordered|bullet">;
+ * the markers normally come from .ql-editor-scoped CSS, and Tailwind preflight
+ * strips list-style — so we re-create numbers/bullets here keyed off data-list.
+ */
+.rich-content ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5em;
+  list-style: decimal outside;
+}
+.rich-content ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5em;
+  list-style: disc outside;
+}
+.rich-content li {
+  margin: 0.125rem 0;
+}
+/* Quill 2 also emits all-<ol> lists tagged via data-list; honor those too. */
+.rich-content li[data-list='ordered'] {
+  list-style-type: decimal;
+}
+.rich-content li[data-list='bullet'] {
+  list-style-type: disc;
+}
+.rich-content a {
+  color: var(--color-brand-600);
+  text-decoration: underline;
+}
+
 /* Hide native number-input spinners (we use NumberStepper / plain fields). */
 input[type='number'] {
   -moz-appearance: textfield;
