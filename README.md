@@ -112,6 +112,29 @@ cross-origin browser request.
 For a **production deployment**, set `VITE_API_BASE_URL` to the full API URL and ensure the
 backend allow-lists your deployed origin (or serve the app behind a host rewrite to `/api`).
 
+### Deploying on Vercel
+
+The staging API does not allow CORS from arbitrary origins, so the browser cannot call it
+directly from `*.vercel.app`. Instead we keep all requests **same-origin** and let Vercel
+proxy them to the backend server-side — exactly mirroring the Vite dev proxy.
+
+`vercel.json` (JSON, so the rationale lives here rather than inline) does two things:
+
+- `/api/:path*` → forwards to the Railway backend, so the browser only ever talks to the
+  Vercel origin and never triggers a cross-origin request (no CORS).
+- `/(.*)` → `/index.html` is the SPA fallback, so client-side routes such as
+  `/tests/:id/preview` resolve on a hard refresh instead of 404-ing.
+
+Required Vercel **Environment Variable** (set before the build, since Vite inlines `VITE_*`
+at build time):
+
+| Variable             | Value  | Notes                                                        |
+| -------------------- | ------ | ----------------------------------------------------------- |
+| `VITE_API_BASE_URL`  | `/api` | Requests stay same-origin and hit the `vercel.json` rewrite |
+
+`VITE_API_PROXY_TARGET` is **not** needed in production — it only drives the dev-server proxy
+in `vite.config.ts`.
+
 ---
 
 ## Testing
