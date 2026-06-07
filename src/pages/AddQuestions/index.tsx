@@ -303,7 +303,7 @@ export function AddQuestions() {
             ]}
           />
           <Button size="sm" onClick={saveAndGoToPreview} loading={submitting}>
-            Save &amp; Publish
+            Save &amp; Preview
           </Button>
         </div>
 
@@ -487,7 +487,7 @@ export function AddQuestions() {
             )}
             {isFinalSlot ? (
               <Button onClick={saveAndGoToPreview} loading={submitting}>
-                Save &amp; Publish
+                Save &amp; Preview
               </Button>
             ) : (
               <Button onClick={handleNext}>Next</Button>
