@@ -1,8 +1,14 @@
 import { CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import type { Question } from '@/api/types'
+import type { Difficulty, Question } from '@/api/types'
 
 const OPTION_FIELDS = ['option1', 'option2', 'option3', 'option4'] as const
+
+const DIFFICULTY_CHIP: Record<Difficulty, string> = {
+  easy: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  medium: 'border-amber-200 bg-amber-50 text-amber-700',
+  difficult: 'border-red-200 bg-red-50 text-red-700',
+}
 
 interface QuestionPreviewProps {
   question: Question
@@ -48,6 +54,31 @@ export function QuestionPreview({ question, index }: QuestionPreviewProps) {
           <span className="font-medium text-ink">Solution: </span>
           {question.explanation}
         </p>
+      )}
+
+      {(question.difficulty || question.topic || question.sub_topic) && (
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-line pt-3">
+          {question.difficulty && (
+            <span
+              className={cn(
+                'rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize',
+                DIFFICULTY_CHIP[question.difficulty],
+              )}
+            >
+              {question.difficulty}
+            </span>
+          )}
+          {question.topic && (
+            <span className="rounded-full border border-line bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-muted">
+              {question.topic}
+            </span>
+          )}
+          {question.sub_topic && (
+            <span className="rounded-full border border-line bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-muted">
+              {question.sub_topic}
+            </span>
+          )}
+        </div>
       )}
     </div>
   )

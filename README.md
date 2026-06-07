@@ -9,6 +9,8 @@ Built with **React + TypeScript + Vite**, integrated with the PrepRoute REST API
 
 ## Quick start
 
+> **Prerequisite:** Node **20.19+ or 22+** (required by Vite 8 / React 19).
+
 ```bash
 # 1. Install dependencies
 npm install
@@ -18,6 +20,9 @@ cp .env.example .env        # already points at the staging API
 
 # 3. Run the dev server
 npm run dev                 # http://localhost:5173
+
+# 4. (only for E2E) install the Playwright browser
+npx playwright install chromium
 ```
 
 **Test credentials:** `vedant-admin` / `vedant123`
@@ -32,6 +37,7 @@ npm run dev                 # http://localhost:5173
 | `npm run typecheck`| Type-check without emitting                  |
 | `npm test`         | Run unit/component tests (Vitest)            |
 | `npm run test:watch`| Vitest in watch mode                        |
+| `npm run test:ui`  | Vitest interactive UI                        |
 | `npm run e2e`      | Run Playwright end-to-end tests              |
 | `npm run lint`     | Run ESLint                                   |
 
@@ -48,6 +54,54 @@ npm run dev                 # http://localhost:5173
 - **Axios** — HTTP client with a JWT interceptor and response-envelope unwrapping
 - **Vitest + Testing Library + MSW** — unit/component tests with a mocked API
 - **Playwright** — end-to-end tests against the real backend
+
+---
+
+## Features
+
+**Auth**
+- User ID / password login with validation, JWT stored in localStorage, password show/hide toggle
+- Protected routes + session restore on refresh; 401s clear the session and redirect
+
+**Dashboard**
+- Test list with search, status filter, and type filter
+- Pagination with selectable page size; view / edit / delete (with confirm dialog)
+- Filtering & pagination live in the data hook, so moving to a server-paginated API later
+  needs no page changes
+
+**Create / Edit Test**
+- Test-type tabs (Chapter Wise / PYQ / Mock), cascading **subject → topics → sub-topics**
+  (multi-select), marking-scheme steppers, difficulty, duration, totals
+- Save as Draft or continue to questions; full edit-mode hydration (API names mapped back to UUIDs)
+
+**Add Questions**
+- Rich-text question editor, four options with a correct answer, per-question difficulty/topic/sub-topic
+- Collapsible question rail; **Next** to add/navigate locally, **Save & Publish** to persist
+- **Edit existing questions** (loads saved questions; create/update/delete diff on save)
+- **CSV bulk import** (see format below), clear-field / clear-all-edits, capped to the configured count
+
+**Preview & Publish**
+- One-question-at-a-time preview with rail + arrow navigation
+- **Publish Now** or **Schedule Publish** with a **Live Until** expiry, current status/date display
+- Publish gated until the added question count equals the configured total
+
+**Cross-cutting** — fully responsive (mobile drawer nav), toasts, loading / empty / error states,
+custom Select / MultiSelect / DateTime / Pagination primitives, and a unit + E2E test suite.
+
+### CSV import format
+
+Header row required (case-insensitive, any order). **Required:** `question`, `option1`–`option4`,
+`correct_option`. **Optional:** `explanation`, `difficulty`, `topic`, `sub_topic`, `media_url`.
+`correct_option` accepts `1`–`4`, `A`–`D`, or `option1`–`option4`; `difficulty` is `easy` /
+`medium` / `difficult` (`hard` → difficult). A ready template is at
+[`public/sample-questions.csv`](public/sample-questions.csv) (downloadable via the **sample** link
+next to the CSV button).
+
+```csv
+question,option1,option2,option3,option4,correct_option,explanation,difficulty,topic,sub_topic
+"What is 2 + 2?",3,4,5,6,2,"Basic addition.",easy,Dice,Games
+"Capital of France?",Berlin,Madrid,Paris,Rome,C,,medium,,
+```
 
 ---
 
