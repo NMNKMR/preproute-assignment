@@ -33,6 +33,7 @@ export function PreviewPublish() {
   const updateTest = useUpdateTest()
 
   const [current, setCurrent] = useState(0)
+  const [editingPublish, setEditingPublish] = useState(false)
   const [mode, setMode] = useState<PublishMode>('now')
   const [liveUntil, setLiveUntil] = useState<LiveUntil>('always')
   const [scheduleDate, setScheduleDate] = useState('')
@@ -95,6 +96,9 @@ export function PreviewPublish() {
   // Publishing requires exactly the configured number of questions.
   const canPublish =
     test.total_questions > 0 && questionIds.length === test.total_questions
+  // A live test hides the publish controls until the user chooses to edit timings.
+  const isLive = test.status === 'live'
+  const showPublishControls = !isLive || editingPublish
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row">
@@ -201,29 +205,47 @@ export function PreviewPublish() {
         {/* Publish panel */}
         <section className="mt-8 rounded-xl border border-line p-5">
           {/* Current state */}
-          <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-line pb-4 text-sm">
-            <span className="inline-flex items-center gap-2">
-              <span className="text-muted">Status</span>
-              <StatusBadge status={test.status} />
-            </span>
-            {test.scheduled_date && (
-              <span>
-                <span className="text-muted">Scheduled: </span>
-                <span className="font-medium text-ink">
-                  {formatDateTime(test.scheduled_date)}
-                </span>
-              </span>
+          <div
+            className={cn(
+              'flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm',
+              showPublishControls && 'mb-4 border-b border-line pb-4',
             )}
-            {test.expiry_date && (
-              <span>
-                <span className="text-muted">Live until: </span>
-                <span className="font-medium text-ink">
-                  {formatDateTime(test.expiry_date)}
-                </span>
+          >
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <span className="inline-flex items-center gap-2">
+                <span className="text-muted">Status</span>
+                <StatusBadge status={test.status} />
               </span>
+              {test.scheduled_date && (
+                <span>
+                  <span className="text-muted">Scheduled: </span>
+                  <span className="font-medium text-ink">
+                    {formatDateTime(test.scheduled_date)}
+                  </span>
+                </span>
+              )}
+              {test.expiry_date && (
+                <span>
+                  <span className="text-muted">Live until: </span>
+                  <span className="font-medium text-ink">
+                    {formatDateTime(test.expiry_date)}
+                  </span>
+                </span>
+              )}
+            </div>
+            {isLive && !editingPublish && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setEditingPublish(true)}
+              >
+                <Pencil className="h-4 w-4" /> Edit publish settings
+              </Button>
             )}
           </div>
 
+          {showPublishControls && (
+          <>
           <div className="inline-flex rounded-lg border border-line p-1">
             {(['now', 'schedule'] as PublishMode[]).map((m) => (
               <button
@@ -322,7 +344,14 @@ export function PreviewPublish() {
               )}
             </p>
             <div className="flex gap-3">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  isLive && editingPublish
+                    ? setEditingPublish(false)
+                    : navigate('/dashboard')
+                }
+              >
                 Cancel
               </Button>
               <Button
@@ -330,10 +359,16 @@ export function PreviewPublish() {
                 loading={updateTest.isPending}
                 disabled={!canPublish}
               >
-                {mode === 'schedule' ? 'Schedule' : 'Publish Test'}
+                {mode === 'schedule'
+                  ? 'Schedule'
+                  : isLive
+                    ? 'Update'
+                    : 'Publish Test'}
               </Button>
             </div>
           </div>
+          </>
+          )}
         </section>
       </div>
     </div>

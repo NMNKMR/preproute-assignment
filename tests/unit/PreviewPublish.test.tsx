@@ -20,6 +20,26 @@ function renderPage(testId = 'test-2') {
   )
 }
 
+/** Render a complete DRAFT test (2/2 questions) — publish controls show by default. */
+function renderDraftTest() {
+  server.use(
+    http.get(`${API_BASE_URL}/tests/:id`, () =>
+      HttpResponse.json({
+        status: 'success',
+        message: 'ok',
+        data: {
+          ...fixtureTests[1],
+          id: 'test-draft',
+          status: 'draft',
+          total_questions: 2,
+          questions: ['q1', 'q2'],
+        },
+      }),
+    ),
+  )
+  return renderPage('test-draft')
+}
+
 describe('PreviewPublish', () => {
   it('shows one question at a time and navigates with the arrows', async () => {
     const user = userEvent.setup()
@@ -97,9 +117,28 @@ describe('PreviewPublish', () => {
     expect(screen.getByText(/live until:/i)).toBeInTheDocument()
   })
 
+  it('hides publish controls for a live test until Edit is clicked', async () => {
+    const user = userEvent.setup()
+    renderPage() // test-2 is live (2/2 questions)
+    await screen.findByText('Aptitude Mock')
+
+    // Controls hidden by default for a live test.
+    expect(
+      screen.queryByRole('button', { name: 'Publish Now' }),
+    ).not.toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: /edit publish settings/i }),
+    )
+
+    expect(screen.getByRole('button', { name: 'Publish Now' })).toBeInTheDocument()
+    // A live test re-publishes via "Update".
+    expect(screen.getByRole('button', { name: 'Update' })).toBeInTheDocument()
+  })
+
   it('reveals schedule pickers on the Schedule Publish tab', async () => {
     const user = userEvent.setup()
-    renderPage()
+    renderDraftTest()
     await screen.findByText('Aptitude Mock')
 
     expect(screen.queryByLabelText('Schedule date')).not.toBeInTheDocument()
@@ -116,6 +155,7 @@ describe('PreviewPublish', () => {
           data: {
             ...fixtureTests[1],
             id: 'test-partial',
+            status: 'draft',
             total_questions: 3,
             questions: ['q1'],
           },
@@ -133,7 +173,7 @@ describe('PreviewPublish', () => {
 
   it('publishes and redirects to the dashboard', async () => {
     const user = userEvent.setup()
-    renderPage()
+    renderDraftTest()
     await screen.findByText('Aptitude Mock')
 
     await user.click(screen.getByRole('button', { name: 'Publish Test' }))
@@ -142,7 +182,7 @@ describe('PreviewPublish', () => {
 
   it('requires a date when scheduling', async () => {
     const user = userEvent.setup()
-    renderPage()
+    renderDraftTest()
     await screen.findByText('Aptitude Mock')
 
     await user.click(screen.getByRole('button', { name: /schedule publish/i }))

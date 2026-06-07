@@ -33,7 +33,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex h-screen overflow-hidden bg-white">
       {/* Sidebar (desktop) */}
       <aside className="hidden w-60 shrink-0 flex-col border-r border-line px-4 py-6 md:flex">
         <div className="px-2">
@@ -70,7 +70,7 @@ export function AppLayout() {
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between border-b border-line px-4 sm:px-6">
+        <header className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4 sm:px-6">
           <div className="flex items-center gap-2">
             <button
               aria-label="Open menu"

@@ -104,6 +104,7 @@ export function AddQuestions() {
   }
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const topRef = useRef<HTMLDivElement>(null)
 
   async function onCsvSelected(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -251,10 +252,17 @@ export function AddQuestions() {
   // On the final required slot with no room left → save instead of "Next".
   const isFinalSlot = atLastDraft && !canAdd
 
+  // Anchor at the top of the editor so advancing scrolls back up (the scroll
+  // container is <main>, not the window, so scrollIntoView is the reliable path).
+  function scrollToTop() {
+    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   // "Next": go to the next draft, or add one (when room) after completing this.
   function handleNext() {
     if (!atLastDraft) {
       setCurrent((c) => c + 1)
+      scrollToTop()
       return
     }
     if (!canAdd) return
@@ -263,10 +271,14 @@ export function AddQuestions() {
       return
     }
     addQuestion()
+    scrollToTop()
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row">
+    <div
+      ref={topRef}
+      className="mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row"
+    >
       {/* Question list rail */}
       <QuestionSidebar
         items={drafts.map((d) => ({
@@ -369,7 +381,10 @@ export function AddQuestions() {
           )}
         </div>
         <div className="mt-2">
+          {/* key per draft → fresh editor instance when switching questions, so
+              react-quill never bleeds a stale value between questions. */}
           <RichTextEditor
+            key={draft.localId}
             value={draft.question}
             onChange={(html) => patch({ question: html })}
           />
